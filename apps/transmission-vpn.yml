@@ -100,7 +100,6 @@
             aliases:
               - '{{pgrole}}'
         state: started
-        labels: '{{pg_labels}}'
     
     - name: 'Wait for {{pgrole}} to initialize'
       wait_for: timeout=30
@@ -133,7 +132,7 @@
         links: 
           - '{{pgrole}}:transmission'
         state: started
-        labels: '{{pg_labels2}}'
+        labels: '{{pg_labels}}'
 
     - name: 'Stopping {{pgrole2}}'
       docker_container:

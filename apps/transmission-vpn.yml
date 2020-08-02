@@ -42,6 +42,8 @@
     - name: 'Adding Traefik'
       set_fact:
         pg_labels:
+          traefik.enable: 'false'
+        pg_labels2:
           traefik.enable: 'true'
           traefik.port: '{{intport}}'
           traefik.frontend.auth.forward.address: '{{gauth}}'
@@ -55,6 +57,7 @@
           traefik.frontend.headers.contentTypeNosniff: 'true'
           traefik.frontend.headers.customResponseHeaders: 'X-Robots-Tag:noindex,nofollow,nosnippet,noarchive,notranslate,noimageindex'
           traefik.frontend.headers.forceSTSHeader: 'true'
+        
 
     - name: 'Setting PG Volumes'
       set_fact:
@@ -116,6 +119,7 @@
             aliases:
               - '{{pgrole}}'
         state: started
+        labels: '{{pg_labels}}'
     
     - name: 'Wait for {{pgrole}} to initialize'
       wait_for: timeout=30
@@ -131,7 +135,7 @@
         links: 
           - '{{pgrole}}:transmission'
         state: started
-        labels: '{{pg_labels}}'
+        labels: '{{pg_labels2}}'
         
     - name: 'Wait for {{pgrole2}} to initialize'
       wait_for: timeout=30

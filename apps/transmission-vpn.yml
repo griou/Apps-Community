@@ -137,10 +137,10 @@
         state: started
         labels: '{{pg_labels2}}'
 
-    # - name: 'Stopping {{pgrole2}}'
-    #   docker_container:
-    #     name: '{{pgrole2}}'
-    #     state: stopped
+    - name: 'Stopping {{pgrole2}}'
+      docker_container:
+        name: '{{pgrole2}}'
+        state: stopped
     
     - name: 'Stopping {{pgrole}}. Go configure ENV values and start transmission-vpn'
       docker_container:

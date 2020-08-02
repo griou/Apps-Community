@@ -31,7 +31,7 @@
         name: '{{pgrole2}}'
         state: absent
       ignore_errors: True
-      
+
     # LABELS ######################################################################
     - name: 'Adding Traefik'
       set_fact:
@@ -129,6 +129,11 @@
         
     - name: 'Wait for {{pgrole2}} to initialize'
       wait_for: timeout=30
+
+    - name: 'Stopping {{pgrole2}}'
+      docker_container:
+        name: '{{pgrole2}}'
+        state: stopped
     
     - name: 'Stopping {{pgrole}}. Go configure ENV values and start transmission-vpn'
       docker_container:

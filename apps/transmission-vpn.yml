@@ -26,17 +26,17 @@
       include_tasks: '/opt/communityapps/apps/_core.yml'
     
     # REMOVE PREVIOUS CONTAINERS ######################################################################
-    - name: Remove {{pgrole2}} Container
-      docker_container:
-        name: '{{pgrole2}}'
-        state: absent
-      ignore_errors: True
+    # - name: Remove {{pgrole2}} Container
+    #   docker_container:
+    #     name: '{{pgrole2}}'
+    #     state: absent
+    #   ignore_errors: True
     
-    - name: Remove transmission-rss Container
-      docker_container:
-        name: 'transmission-rss'
-        state: absent
-      ignore_errors: True
+    # - name: Remove transmission-rss Container
+    #   docker_container:
+    #     name: 'transmission-rss'
+    #     state: absent
+    #   ignore_errors: True
 
     # LABELS ######################################################################
     - name: 'Adding Traefik'

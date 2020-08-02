@@ -84,7 +84,6 @@
         pull: yes
         published_ports:
           - '{{ports.stdout}}{{extport}}:{{intport}}'
-          - '{{ports.stdout}}{{extport2}}:{{intport2}}'
         volumes: '{{pg_volumes}}'
         env: '{{pg_env}}'
         restart_policy: unless-stopped
@@ -102,7 +101,6 @@
             aliases:
               - '{{pgrole}}'
         state: started
-        labels: '{{pg_labels}}'
 
     - name: 'Wait for {{pgrole}} to initialize'
       wait_for: timeout=30

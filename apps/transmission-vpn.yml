@@ -18,19 +18,20 @@
         extport: '8888'
         intport2: '9091'
         extport2: '9091'
-        image2: 'haugene/transmission-openvpn-proxy:latest'
         image: 'haugene/transmission-openvpn:latest'
+        image2: 'haugene/transmission-openvpn-proxy:latest'
+
 
     # CORE (MANDATORY) ############################################################
     - name: 'Including cron job'
       include_tasks: '/opt/communityapps/apps/_core.yml'
     
     # REMOVE PREVIOUS CONTAINERS ######################################################################
-    - name: Remove {{pgrole2}} Container
-      docker_container:
-        name: '{{pgrole2}}'
-        state: absent
-      ignore_errors: True
+    # - name: Remove {{pgrole2}} Container
+    #   docker_container:
+    #     name: '{{pgrole2}}'
+    #     state: absent
+    #   ignore_errors: True
     
     - name: Remove transmission-rss Container
       docker_container:

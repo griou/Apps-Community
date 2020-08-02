@@ -120,13 +120,7 @@
         state: started
     
     - name: 'Wait for {{pgrole}} to initialize'
-      wait_for: timeout=30
-    
-    # must stop before starting proxy to avoid bug with portainer https://github.com/portainer/portainer/issues/2211
-    - name: 'Stopping {{pgrole}}'
-      docker_container:
-        name: '{{pgrole}}'
-        state: stopped
+      wait_for: timeout=10
     
     - name: 'Deploying {{pgrole2}}'
       docker_container:
@@ -138,12 +132,15 @@
         restart_policy: unless-stopped
         links: 
           - '{{pgrole}}:transmission'
-        state: started
+        state: present
         labels: '{{pg_labels}}'
 
-    - name: 'Stopping {{pgrole2}}. Go configure ENV values and start transmission-vpn then transmission-proxy'
+    # must stop before starting proxy to avoid bug with portainer https://github.com/portainer/portainer/issues/2211
+    - name: 'Stopping {{pgrole}}'
       docker_container:
-        name: '{{pgrole2}}'
+        name: '{{pgrole}}'
         state: stopped
+
+
     
     

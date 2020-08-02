@@ -13,11 +13,12 @@
     - name: 'Set Known Facts'
       set_fact:
         pgrole: 'transmission-vpn'
-        pgrole2: 'transmission-rss'
-        intport: '9091'
-        extport: '9091'
-        intport2: '8888'
-        extport2: '8888'
+        pgrole2: 'transmission-proxy'
+        intport: '8888'
+        extport: '8888'
+        intport2: '9091'
+        extport2: '9091'
+        image2: 'haugene/transmission-openvpn-proxy:latest'
         image: 'haugene/transmission-openvpn:latest'
 
     # CORE (MANDATORY) ############################################################
@@ -62,7 +63,7 @@
           OPENVPN_OPTS: '--inactive 3600 --ping 10 --ping-exit 60'
           CREATE_TUN_DEVICE: 'true'
           WEBPROXY_ENABLED: 'true'
-          WEBPROXY_PORT: '{{extport2}}'
+          WEBPROXY_PORT: '{{extport}}'
           LOCAL_NETWORK: 172.18.0.0/16
           TRANSMISSION_WEB_HOME: '/config/webui-theme'
           TRANSMISSION_WEB_UI: 'transmission-web-control'
@@ -71,25 +72,25 @@
           TRANSMISSION_DHT_ENABLED: 'false'
           TRANSMISSION_DOWNLOAD_DIR: '/mnt/downloads/{{pgrole}}'
           TRANSMISSION_INCOMPLETE_DIR: '/mnt/incomplete/{{pgrole}}'
-          TRANSMISSION_RPC_PORT: '{{intport}}'
+          TRANSMISSION_RPC_PORT: '{{intport2}}'
           TRANSMISSION_WATCH_DIR: '/mnt/torrent/watch'
           TRANSMISSION_WATCH_DIR_ENABLED: 'false'
           TRANSMISSION_HOME: '/config/home'
 
     # MAIN DEPLOYMENT #############################################################
+
     - name: 'Deploying {{pgrole}}'
       docker_container:
         name: '{{pgrole}}'
         image: '{{image}}'
         pull: yes
-        published_ports:
-          - '{{ports.stdout}}{{extport}}:{{intport}}'
-          - '{{ports.stdout}}{{extport2}}:{{intport2}}'
         volumes: '{{pg_volumes}}'
         env: '{{pg_env}}'
         restart_policy: unless-stopped
         devices:
           - '/dev/net/tun:/dev/net/tun:rwm'
+        exposed_ports:
+          - '{{intport}}'
         dns_servers:
           - 1.1.1.1
           - 84.200.69.80
@@ -103,11 +104,26 @@
               - '{{pgrole}}'
         state: started
         labels: '{{pg_labels}}'
-
+    
     - name: 'Wait for {{pgrole}} to initialize'
       wait_for: timeout=30
-
-    - name: 'Stopping {{pgrole}}. Go configure ENV values.'
+    
+    - name: 'Deploying {{pgrole2}}'
+      docker_container:
+        name: '{{pgrole2}}'
+        image: '{{image2}}'
+        pull: yes
+        published_ports:
+          - '{{ports.stdout}}{{extport}}:{{intport}}'
+        restart_policy: unless-stopped
+        links: 
+          - '{{pgrole}}:transmission'
+        state: started
+        
+    - name: 'Wait for {{pgrole2}} to initialize'
+      wait_for: timeout=30
+    
+    - name: 'Stopping {{pgrole}}. Go configure ENV values and start transmission-vpn'
       docker_container:
         name: '{{pgrole}}'
         state: stopped

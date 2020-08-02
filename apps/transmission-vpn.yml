@@ -136,9 +136,6 @@
           - '{{pgrole}}:transmission'
         state: started
         labels: '{{pg_labels2}}'
-        
-    - name: 'Wait for {{pgrole2}} to initialize'
-      wait_for: timeout=30
 
     # - name: 'Stopping {{pgrole2}}'
     #   docker_container:

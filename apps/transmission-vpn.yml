@@ -24,6 +24,19 @@
     # CORE (MANDATORY) ############################################################
     - name: 'Including cron job'
       include_tasks: '/opt/communityapps/apps/_core.yml'
+    
+    # REMOVE PREVIOUS CONTAINERS ######################################################################
+    - name: Remove {{pgrole2}} Container
+      docker_container:
+        name: '{{pgrole2}}'
+        state: absent
+      ignore_errors: True
+    
+    - name: Remove transmission-rss Container
+      docker_container:
+        name: 'transmission-rss'
+        state: absent
+      ignore_errors: True
 
     # LABELS ######################################################################
     - name: 'Adding Traefik'
@@ -32,7 +45,7 @@
           traefik.enable: 'true'
           traefik.port: '{{intport}}'
           traefik.frontend.auth.forward.address: '{{gauth}}'
-          traefik.frontend.rule: 'Host:{{pgrole}}.{{domain.stdout}}{{tldset}}{{cname}}'
+          traefik.frontend.rule: 'Host:{{pgrole2}}.{{domain.stdout}}{{tldset}}{{cname}}'
           traefik.frontend.headers.SSLHost: '{{domain.stdout}}'
           traefik.frontend.headers.SSLRedirect: 'true'
           traefik.frontend.headers.STSIncludeSubdomains: 'true'
@@ -122,6 +135,11 @@
         
     - name: 'Wait for {{pgrole2}} to initialize'
       wait_for: timeout=30
+
+    # - name: 'Stopping {{pgrole2}}'
+    #   docker_container:
+    #     name: '{{pgrole2}}'
+    #     state: stopped
     
     - name: 'Stopping {{pgrole}}. Go configure ENV values and start transmission-vpn'
       docker_container:
